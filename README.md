@@ -1,34 +1,17 @@
 # vercel-tabroom-info-api
-An unofficial API created to query information such as tournaments, events, entries, rounds, and pairings. 
+An unofficial API created to query information such as tournaments, events, entries, rounds, and pairings. This is the vercel repository for python runtime with serverless functions. 
 
 # Setup
-## Create an environment
-Create the python environment for this API to run in (tested with Python 3.11.4).
-```
-python<version> -m venv tabroom-info-api
-```
-## Dependencies
-Install the neccessary dependencies. 
-```
-pip install os, re, fastapi, uvicorn, requests, beautifulsoup4
-```
+## Import from GitHub
+  Import the Git repository to a new project on Vercel. 
 ## Environment Variables
 Setup environment variables to store the cookie, username, and password. Replace the username and password below with the respective account that you want to use. 
 > :warning: **These variables are stored as environment variables:** Implement encryption if you want them to be secure!
 ```
-export TABROOM_COOKIE=""
-export USERNAME="username"
-export PASSWORD="password"
+TABROOM_COOKIE=" "
+USERNAME="username"
+PASSWORD="password"
 ```
-
-# Startup
-## Getting the user cookie
-The API is only able to run if the user cookie has been acquired. You must first run getCookie.py in order to grab this cookie.
-## Running the API
-Run this command in order to startup the app. Now you are able to make calls.
-````
-uvicorn main:app --reload
-````
 
 # Usage
 All of the following are GET Requests. 
