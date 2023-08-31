@@ -1,12 +1,12 @@
 # vercel-tabroom-info-api
-An unofficial API created to query information such as tournaments, events, entries, rounds, and pairings. This is the vercel repository for python runtime with serverless functions. 
+An unofficial API created to query information such as tournaments, events, entries, rounds, and pairings. This is the vercel repository for python runtime with serverless functions. This is modified to be easily uploaded to a Vercel instance. 
 
 # Setup
 ## Import from GitHub
   Import the Git repository to a new project on Vercel. 
 ## Environment Variables
 Setup environment variables to store the cookie, username, and password. Replace the username and password below with the respective account that you want to use. 
-> :warning: **These variables are stored as environment variables:** Implement encryption if you want them to be secure!
+> :warning: **These variables are stored as environment variables:** Implement encryption (Vercel should auto-encrypt these) if you want them to be secure!
 ```
 TABROOM_COOKIE=" "
 USERNAME="username"
