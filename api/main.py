@@ -1,17 +1,13 @@
 # fastapi, uvicorn, requests, beautifulsoup4, re
-
 from fastapi import FastAPI
-
 import re
-
 import os
-
 import requests
 from bs4 import BeautifulSoup
 
 app = FastAPI()
 
-# Takes a search query as an input and returns all possible tournaments along with their respective location, date, circuits, and IDs. 
+# Takes a search query as an input and returns all possible tournaments along with their respective location, date, circuits, and IDs.
 @app.get("/api/search/{query}")
 async def search(query: str):
     session = requests.Session()
@@ -23,7 +19,7 @@ async def search(query: str):
     if resp.status_code != 200:
         return {"error": f"bad status code {resp.status_code}"}
     soup = BeautifulSoup(resp.text, "html.parser")
-    
+
     results = []
     for row in soup.find_all('tr'):
         columns = row.select('td')
@@ -44,7 +40,7 @@ async def search(query: str):
     return {"results": results}
 
 
-# Takes a tournament id as an input and returns all events and their respective IDs at that tournament. 
+# Takes a tournament id as an input and returns all events and their respective IDs at that tournament.
 @app.get("/api/events/{tourn_id}")
 async def events(tourn_id: str):
     session = requests.Session()
@@ -67,7 +63,7 @@ async def events(tourn_id: str):
         events.append(event)
     return {"events": events}
 
-# Takes a tournament id and event id as inputs and returns all entries. 
+# Takes a tournament id and event id as inputs and returns all entries.
 @app.get("/api/entries/{tourn_id}/{event_id}")
 async def entries(tourn_id: str, event_id: str):
     session = requests.Session()
@@ -90,16 +86,20 @@ async def entries(tourn_id: str, event_id: str):
                 location = columns[1].get_text(strip=True)
                 entry = columns[2].get_text(strip=True)
                 code = columns[3].get_text(strip=True)
-                record = columns[4].find('a')['href']
+                link = columns[4].find('a')
+                if link is not None:
+                    record = "https://www.tabroom.com" + link['href']
+                else:
+                    record = None
                 competitor = {
                     "school": school,
                     "location": location,
                     "entry": entry,
                     "code": code,
-                    "record": "https://www.tabroom.com"+record
+                    "record": record
                 }
                 entries.append(competitor)
-            elif len(columns) >= 4: # Speech entries withoutrecords
+            elif len(columns) >= 4: # Speech entries without records
                 school = columns[0].get_text(strip=True)
                 location = columns[1].get_text(strip=True)
                 entry = columns[2].get_text(strip=True)
@@ -113,20 +113,20 @@ async def entries(tourn_id: str, event_id: str):
                 entries.append(competitor)
     return {"entries": entries}
 
-# Takes a tournament id and event id as an inputs and returns all of the rounds and their respective IDs. 
+# Takes a tournament id and event id as an inputs and returns all of the rounds and their respective IDs.
 @app.get("/api/rounds/{tourn_id}/{event_id}")
 async def rounds(tourn_id: str, event_id: str):
     session = requests.Session()
     session.headers.update({
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:109.0) Gecko/20100101 Firefox/116.0',
         'Cookie': os.environ.get('TABROOM_COOKIE'),
-        'Referer': 'https://www.tabroom.com/index/tourn/postings/round.mhtml?tourn_id={tourn_id}&round_id=0',
+        'Referer': f'https://www.tabroom.com/index/tourn/postings/round.mhtml?tourn_id={tourn_id}&round_id=0',
     })
     payload = {
-        'tourn_id': {tourn_id},
-        'event_id': {event_id}
+        'tourn_id': tourn_id,
+        'event_id': event_id
     }
-    resp = session.post("https://www.tabroom.com/index/tourn/postings/index.mhtml", payload)
+    resp = session.post("https://www.tabroom.com/index/tourn/postings/index.mhtml", data=payload)
     if resp.status_code != 200:
         return {"error": f"bad status code {resp.status_code}"}
     soup = BeautifulSoup(resp.text, "html.parser")
@@ -144,7 +144,7 @@ async def rounds(tourn_id: str, event_id: str):
     
     return {"rounds": rounds}
 
-# Takes a tournament id and round id as inputs and returns all pairings. 
+# Takes a tournament id and round id as inputs and returns all pairings.
 @app.get("/api/pairings/{tourn_id}/{round_id}")
 async def pairings(tourn_id: str, round_id: str):
     session = requests.Session()
