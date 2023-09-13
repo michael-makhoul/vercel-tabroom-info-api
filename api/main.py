@@ -166,6 +166,7 @@ async def pairings(tourn_id: str, round_id: str):
         "": "entries",
         "JudgesEntries": "judges",
         "Entries": "entries",
+        "Bracket": "bracket",
     }
     
     for row in table.find_all('tr'):
