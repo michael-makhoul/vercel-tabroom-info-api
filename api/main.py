@@ -123,11 +123,7 @@ async def rounds(tourn_id: str, event_id: str):
         'Referer': f'https://www.tabroom.com/index/tourn/postings/round.mhtml?tourn_id={tourn_id}&round_id=0',
     })
     payload = {
-<<<<<<< HEAD
-        'tourn_id': tourn_id,  # Remove curly braces from tourn_id and event_id
-=======
         'tourn_id': tourn_id,
->>>>>>> ca6dad2f1f189a91f94522740dfc51f594d71a08
         'event_id': event_id
     }
     resp = session.post("https://www.tabroom.com/index/tourn/postings/index.mhtml", data=payload)
@@ -148,12 +144,8 @@ async def rounds(tourn_id: str, event_id: str):
     
     return {"rounds": rounds}
 
-<<<<<<< HEAD
 
 # Takes a tournament id and round id as inputs and returns all pairings. 
-=======
-# Takes a tournament id and round id as inputs and returns all pairings.
->>>>>>> ca6dad2f1f189a91f94522740dfc51f594d71a08
 @app.get("/api/pairings/{tourn_id}/{round_id}")
 async def pairings(tourn_id: str, round_id: str):
     session = requests.Session()
@@ -205,7 +197,7 @@ async def pairings(tourn_id: str, round_id: str):
         
         if "entries" in entry and "Locked" in entry["entries"]:
             entry["entries"] = entry["entries"].replace("Locked Aff", " (Locked Aff)")
-            entry["entries"] = entry["entries"].replace("Locked Aff", " (Locked Neg)")
+            entry["entries"] = entry["entries"].replace("Locked Neg", " (Locked Neg)")
             
         if entry:
             pairings.append(entry)
