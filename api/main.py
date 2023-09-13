@@ -123,7 +123,11 @@ async def rounds(tourn_id: str, event_id: str):
         'Referer': f'https://www.tabroom.com/index/tourn/postings/round.mhtml?tourn_id={tourn_id}&round_id=0',
     })
     payload = {
+<<<<<<< HEAD
+        'tourn_id': tourn_id,  # Remove curly braces from tourn_id and event_id
+=======
         'tourn_id': tourn_id,
+>>>>>>> ca6dad2f1f189a91f94522740dfc51f594d71a08
         'event_id': event_id
     }
     resp = session.post("https://www.tabroom.com/index/tourn/postings/index.mhtml", data=payload)
@@ -135,7 +139,7 @@ async def rounds(tourn_id: str, event_id: str):
     for group in side_note_div.find_all("a"):
         round_name = group.get_text(strip=True)
         round_id = group.get("href")
-        if round_id.find("judge_list") and round_id.find("jpool"):
+        if round_id.find("judge_list") and round_id.find("jpool") and round_name != "Bracket":
             event = {
                 "round_name": round_name.replace("\n\t\t\t\t\t\t\t\t", " "),
                 "round_id": round_id.split("=")[-1]
@@ -144,7 +148,12 @@ async def rounds(tourn_id: str, event_id: str):
     
     return {"rounds": rounds}
 
+<<<<<<< HEAD
+
+# Takes a tournament id and round id as inputs and returns all pairings. 
+=======
 # Takes a tournament id and round id as inputs and returns all pairings.
+>>>>>>> ca6dad2f1f189a91f94522740dfc51f594d71a08
 @app.get("/api/pairings/{tourn_id}/{round_id}")
 async def pairings(tourn_id: str, round_id: str):
     session = requests.Session()
@@ -158,13 +167,47 @@ async def pairings(tourn_id: str, round_id: str):
     soup = BeautifulSoup(resp.text, "html.parser")
     pairings = []
     table = soup.find('table')
+    
+    header_mapping = {
+        "Flt": "flight",
+        "Room": "room",
+        "": "entries",
+        "JudgesEntries": "judges",
+        "Entries": "entries",
+    }
+    
     for row in table.find_all('tr'):
         columns = row.find_all('td')
         entry = {}
         for i, column in enumerate(columns):
             header = table.find('thead').find('tr').find_all('th')[i].get_text(strip=True)
+            header = header_mapping.get(header, header)
             value = re.sub(r"[*|\n|\t]", "", column.get_text(strip=True))
-            entry[header] = value
+            
+            if "Judge" in header:
+                if "judges" in entry:
+                    entry["judges"] += f", {value}" if value else ""
+                else:
+                    entry["judges"] = value if value else ""
+            elif "Aff" in header or "Neg" in header:
+                if "entries" in entry:
+                    entry["entries"] += f", [{header}] {value}" if value else ""
+                else:
+                    entry["entries"] = f"[{header}] {value}" if value else ""
+            else:
+                if header in entry:
+                    if header in ["entries", "judges"] and value:
+                        entry[header] += ", " + value
+                    else:
+                        entry[header] += " " + value if value else ""
+                else:
+                    entry[header] = value if value else ""
+        
+        if "entries" in entry and "Locked" in entry["entries"]:
+            entry["entries"] = entry["entries"].replace("Locked Aff", " (Locked Aff)")
+            entry["entries"] = entry["entries"].replace("Locked Aff", " (Locked Neg)")
+            
         if entry:
             pairings.append(entry)
+    
     return {"pairings": pairings}
