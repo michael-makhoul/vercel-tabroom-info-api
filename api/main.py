@@ -24,12 +24,13 @@ async def search(query: str):
     for row in soup.find_all('tr'):
         columns = row.select('td')
         if len(columns) >= 4:
+            tournament_id_element = columns[0].select_one('a.plain')
+            tourn_id = tournament_id_element.get('href') if tournament_id_element else "No Tournament ID"
             tournament_name_element = columns[0].select_one('a.plain')
             tournament_name = tournament_name_element.text.strip() if tournament_name_element else "No Tournament Name"
             location = columns[1].get_text(strip=True)
             date = columns[2].get_text(strip=True)
             circuits = columns[3].get_text(strip=True)
-            tourn_id = columns[0].select_one('a.plain').get('href')
             tournament = {
                 "name": tournament_name,
                 "location": location.replace("\n\t\t\t\t\t\t", ""),
