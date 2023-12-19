@@ -27,7 +27,8 @@ async def search(query: str):
             tournament_name = columns[0].find('a', class_='bluetext').text.strip()
             location = columns[1].get_text(strip=True)
             date = columns[2].get_text(strip=True)
-            circuits = columns[4].get_text(strip=True)
+            circuits_list = columns[3].find_all('span', class_='full')
+            circuits = ", ".join(circuit.text.strip() for circuit in circuits_list)
             tourn_id = columns[0].find('a', class_='bluetext').get('href')
             tournament = {
                 "name": tournament_name,
