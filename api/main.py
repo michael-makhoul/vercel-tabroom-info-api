@@ -31,7 +31,7 @@ async def search(query: str):
             tourn_id = columns[0].find('a', class_='bluetext').get('href')
             tournament = {
                 "name": tournament_name,
-                "location": location.replace("\n\t", ""),
+                "location": location.replace("\n\t\t\t\t\t\t", ""),
                 "date": date,
                 "circuits": circuits,
                 "tourn_id": tourn_id.replace("/index/tourn/index.mhtml?tourn_id=", "")
