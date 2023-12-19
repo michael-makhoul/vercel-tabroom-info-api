@@ -25,11 +25,11 @@ async def search(query: str):
         columns = row.select('td')
         if len(columns) >= 4:
             tournament_name = columns[0].find('a', class_='bluetext').text.strip()
+            tourn_id = columns[0].find('a', class_='bluetext').get('href')
             location = columns[1].get_text(strip=True)
             date = columns[2].get_text(strip=True)
-            circuits_list = columns[3].find_all('span', class_='full')
+            circuits_list = columns[4].find_all('span', class_='full')
             circuits = ", ".join(circuit.text.strip() for circuit in circuits_list)
-            tourn_id = columns[0].find('a', class_='bluetext').get('href')
             tournament = {
                 "name": tournament_name,
                 "location": location.replace("\n\t\t\t\t\t\t", "").replace("\n\t",""),
